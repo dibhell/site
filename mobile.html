@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dIb (MOBILE) - Hell's Favorite Meme Coin</title>
+
+  <!-- (opcjonalnie) Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HBEDCL2DHZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-HBEDCL2DHZ');
+  </script>
+
+  <!-- Wykrywanie urządzenia mobilnego (jeśli nie, przekierowanie do index.html) -->
+  <script>
+  (function(){
+      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if(!isMobile){
+          window.location.href = "index.html";
+      }
+  })();
+  </script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background: #0a0a0a;
+      color: #ff0000;
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Creepster', cursive;
+      cursor: crosshair;
+    }
+
+    /* Mozaika w tle */
+    #mosaic-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      filter: brightness(0.7);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .puzzle-piece {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      transition: 0.3s;
+      border: 1px solid #ff000022;
+      position: relative;
+    }
+    .puzzle-piece::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 5%;
+      width: 90%;
+      height: 20px;
+      background: radial-gradient(#ff000044, transparent 70%);
+      filter: blur(10px);
+    }
+
+    /* 
+      Rybka nr 1 (dib_nb.png):
+      .fish-wrapper -> sterujemy transform (translate, skew, scale) w JS
+      .fish-inner   -> animacja "do-trick" (obrót 0->360->0)
+    */
+    .fish-wrapper {
+      position: absolute; 
+      z-index: 2;
+    }
+    .fish-inner {
+      display: block;
+      width: 300px;
+      filter: saturate(0.8);
+      animation: flicker 2s infinite;
+      transform-origin: center center;
+    }
+
+    /* 
+      Rybka nr 2 (token-box), goni rybkę #1:
+      .box-wrapper -> pozycja/transform w JS
+      .box-inner   -> animacja obrotu "do-trick"
+    */
+    .box-wrapper {
+      position: absolute;
+      z-index: 5;
+    }
+    .box-inner {
+      width: 220px;
+      height: 50px;
+      background: #1a0000;
+      border: 2px solid #ff0000;
+      font-family: 'Bangers';
+      text-shadow: 0 0 10px #ff0000;
+      border-radius: 666px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 0 20px #ff0000;
+      cursor: pointer;
+      transform-origin: center center;
+      transition: box-shadow 0.3s;
+    }
+    .box-inner:hover {
+      box-shadow: 0 0 30px #ff0000;
+    }
+
+    /* Powiadomienie o kopiowaniu */
+    .copy-notification {
+      position: fixed;
+      top: 80%;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #00ff00;
+      font-family: 'Creepster';
+      opacity: 0;
+      animation: copyAlert 2s;
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    /* Klątwy, ramki, licznik */
+    .curse-element {
+      position: absolute;
+      pointer-events: none;
+      font-size: 1.5em;
+      animation: curse 6s forwards;
+      text-shadow: 0 0 10px #ff0000;
+      white-space: nowrap;
+      z-index: 3;
+    }
+    .floating-frame {
+      position: absolute;
+      background: #1a0000;
+      border: 3px solid #ff0000;
+      padding: 15px;
+      max-width: 200px;
+      font-family: 'Bangers';
+      animation: floatFrame 25s linear forwards;
+      box-shadow: 0 0 20px #ff0000;
+      z-index: 4;
+      opacity: 1;
+      top: 20vh;
+      transform: translateY(0) rotate(-5deg) scale(0.9);
+    }
+    #counter {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      font-size: 2em;
+      color: #ff0000;
+      z-index: 4;
+    }
+
+    /* Animacje kluczowe */
+    @keyframes flicker {
+      0% { filter: brightness(1) contrast(1); }
+      50% { filter: brightness(1.2) contrast(1.5); }
+      100% { filter: brightness(1) contrast(1); }
+    }
+    @keyframes curse {
+      0% { opacity: 1; transform: scale(1) translateY(0); }
+      50% { opacity: 1; transform: scale(1.2) translateY(-40px); }
+      80% { opacity: 1; transform: scale(1.1) translateY(-60px); }
+      100% { opacity: 0; transform: scale(0.5) translateY(-80px); }
+    }
+    @keyframes floatFrame {
+      0% {
+          opacity: 0;
+          transform: translateY(0) rotate(-5deg) scale(0.9);
+      }
+      20% {
+          opacity: 1;
+          transform: translateY(-20px) rotate(-5deg) scale(1);
+      }
+      90% {
+          opacity: 1;
+          transform: translateY(-100vh) rotate(5deg);
+      }
+      100% {
+          opacity: 0;
+          transform: translateY(-100vh) rotate(5deg) scale(0.8);
+      }
+    }
+    @keyframes copyAlert {
+      0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+
+    /*
+      Animacja "entity-trick" (0 -> 360 -> 0)
+      Brak przesuwania, zaczyna i kończy się w tym samym położeniu
+    */
+    @keyframes entity-trick {
+      0%   { transform: scale(1) rotate(0deg); }
+      25%  { transform: scale(1.2) rotate(90deg) skew(0, 10deg); }
+      50%  { transform: scale(0.8) rotate(180deg) skew(10deg, 0); }
+      75%  { transform: scale(1.3) rotate(270deg); }
+      100% { transform: scale(1) rotate(360deg); }
+    }
+    .do-trick {
+      animation: entity-trick 2s ease-in-out forwards;
+    }
+
+    /* Responsywność - telefony */
+    @media (max-width: 768px) {
+      #mosaic-container {
+        grid-template-columns: repeat(5, 1fr);
+      }
+      .fish-inner {
+        width: 180px;
+      }
+      .box-inner {
+        width: 150px;
+        height: 40px;
+        font-size: 0.85rem;
+      }
+      #counter {
+        font-size: 1.3em;
+        bottom: 10px;
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Rybka nr 1 (dib_nb.png) -->
+  <div class="fish-wrapper" id="fish-wrapper">
+    <img src="dib_nb.png" class="fish-inner" id="fish-inner" alt="Demonic Coin"/>
+  </div>
+
+  <!-- Rybka nr 2 (token-box) -->
+  <div class="box-wrapper" id="box-wrapper">
+    <div class="box-inner" id="box-inner">
+      CONTRACT: The sixth infernal raven...
+    </div>
+  </div>
+
+  <!-- Mozaika -->
+  <div id="mosaic-container"></div>
+
+  <!-- Licznik -->
+  <div id="counter">Souls Damned: 0</div>
+
+  <script>
+  /* =========================================================
+     1. Funkcja kopiowania
+     ========================================================= */
+  function copyToken() {
+      navigator.clipboard.writeText("soon my slaves... soon..");
+      const notification = document.createElement('div');
+      notification.className = 'copy-notification';
+      notification.textContent = "COPIED (YOUR SOUL IS NEXT)";
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 2000);
+  }
+
+  /* =========================================================
+     2. Kliknięcie w ekran -> rybka #1 płynie do miejsca klik.
+     ========================================================= */
+  document.addEventListener('click', (e) => {
+      copyToken();
+
+      destinationX = e.clientX - fishWidth/2;
+      destinationY = e.clientY - fishHeight/2;
+      fishApproaching = true;
+      fishDidTrick = false;
+  });
+
+  /* =========================================================
+     3. Mozaika i klątwy
+     ========================================================= */
+  function createMosaic() {
+      const container = document.getElementById('mosaic-container');
+      for(let i = 0; i < 100; i++) {
+          const piece = document.createElement('div');
+          piece.className = 'puzzle-piece';
+          piece.style.backgroundImage = `url(dib.jpg)`;
+          piece.style.backgroundPosition =
+              `${(i % 10) * -10}% ${Math.floor(i/10) * -10}%`;
+          piece.style.transform = `
+              rotate(${Math.random() * 360}deg)
+              scale(${0.8 + Math.random() * 0.4})
+          `;
+          container.appendChild(piece);
+      }
+  }
+
+  const curses = {
+    emojis: [
+      '💲','👿','😈','💀','👹','🔥','🎩','⚰️','🔪','🪓','💣','☠️','🌑','🦴','🧨','🗡️',
+      '🔮','☣️','⛓️','💰','💸','🤑','🏦','💱','📉','💹','🪙','⛧€','💲🔥','🐍₿','👹💸',
+      '♠️♦️','⚖️🩸','🔥₿','🩸$','🪦💵','⛓️🤑','🧛♂️💳','☠️📉','💳🔥','🕳️💎','⚰️💰',
+      '🔱💲','📜👺','🌪️💶','🗝️💔','🛡️₿','🧪💸','⚰️📉'
+    ],
+    phrases: [
+      "Your wallet is already in hell",
+      "Even Satan HODLs this",
+      "Rugpull speedrun any% WR",
+      "Financial seppuku included!",
+      "404: Financial Literacy Not Found",
+      "Certified Shitcoin™",
+      "Proof of Damnation",
+      "Your loss is our liquidity",
+      "Ponzi 2.0 - Now with hellfire!",
+      "Moon cancelled - going to hell",
+      "Dev abandoned project (literally)",
+      "DYOR? More like DYWORSHIPTHEDEVIL",
+      "Tokenomics by Beelzebub",
+      "100% of losses go to hell's charity",
+      "This is how wallets die",
+      "Liquidity pool hotter than hell",
+      "Whitepaper written in blood",
+      "Staking rewards: eternal damnation",
+      "Vaporware with extra steps",
+      "Not a scam (we swear)"
+    ],
+    perks: [
+      "666% APR in soul tokens",
+      "Eternal impermanent loss",
+      "Dev wallet: 69% supply",
+      "Liquidity locked in hell's vault",
+      "Audited by Cerberus",
+      "1000x or eternal damnation",
+      "Satan-approved tokenomics",
+      "Hellmainnet live since 1666",
+      "Zero utility maximum chaos",
+      "Inflation rate: 666%",
+      "Backed by demonic energy",
+      "CEO: Lucifer Morningstar"
+    ]
+  };
+
+  let curseCount = 0;
+  const counter = document.getElementById('counter');
+
+  function spawnCurses(e) {
+      if(Math.random() > 0.88) return;
+
+      const curseType = Math.random();
+      const curse = document.createElement('div');
+      curse.className = 'curse-element';
+      curse.style.left = `${e.pageX + 15}px`;
+      curse.style.top = `${e.pageY - 15}px`;
+
+      if(curseType < 0.4) {
+          curse.textContent = curses.emojis[Math.floor(Math.random() * curses.emojis.length)];
+          curse.style.fontSize = `${30 + Math.random() * 70}px`;
+          curse.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
+      }
+      else if(curseType < 0.7) {
+          curse.textContent = curses.phrases[Math.floor(Math.random() * curses.phrases.length)];
+          curse.style.fontFamily = Math.random() > 0.5 ? 'Bangers' : 'Arial Black';
+      }
+      else {
+          curse.innerHTML = `${curses.emojis[Math.floor(Math.random() * curses.emojis.length)]} ${curses.phrases[Math.floor(Math.random() * curses.phrases.length)]}`;
+      }
+
+      curse.style.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      document.body.appendChild(curse);
+      setTimeout(() => curse.remove(), 6000);
+
+      // Okazjonalne "floating-frame"
+      if(Math.random() > 0.69) {
+          const frame = document.createElement('div');
+          frame.className = 'floating-frame';
+          frame.style.left = `${Math.random() * window.innerWidth}px`;
+          frame.textContent = curses.perks[Math.floor(Math.random() * curses.perks.length)];
+          document.body.appendChild(frame);
+
+          setTimeout(() => {
+              frame.style.opacity = '10';
+              setTimeout(() => frame.remove(), 10000);
+          }, 14000);
+      }
+
+      curseCount++;
+      counter.textContent = `Souls Damned: ${curseCount}`;
+  }
+
+  /* =========================================================
+     4. Parametry rybki #1 (dib_nb.png)
+     ========================================================= */
+  const fishWrapper = document.getElementById('fish-wrapper');
+  const fishInner   = document.getElementById('fish-inner');
+
+  let fishX = 100,  fishY = 100;
+  let fishVX = 1,   fishVY = 1;
+  let oldFishVX = 1, oldFishVY = 1;
+  let fishWidth = 300, fishHeight = 300;
+  let fishFriction = 0.98;
+  let fishApproaching = false;
+  let fishDidTrick = false;
+  let destinationX = 0, destinationY = 0;
+
+  fishInner.addEventListener('load', () => {
+      const rect = fishInner.getBoundingClientRect();
+      fishWidth = rect.width;
+      fishHeight = rect.height;
+  });
+
+  /* =========================================================
+     5. Parametry rybki #2 (token-box), goni rybkę #1
+        z efektem "żelowego odbicia" przy zbyt małym dystansie
+     ========================================================= */
+  const boxWrapper = document.getElementById('box-wrapper');
+  const boxInner   = document.getElementById('box-inner');
+
+  let boxX = 500, boxY = 300;
+  let boxVX = -1, boxVY = 2;
+  let oldBoxVX = -1, oldBoxVY = 2;
+  let boxWidth = 220, boxHeight = 50;
+  let boxFriction = 0.98;
+  let boxDidTrick = false;
+
+  // Wczytujemy wymiary boxa
+  document.addEventListener('DOMContentLoaded', () => {
+      const rect = boxInner.getBoundingClientRect();
+      boxWidth = rect.width;
+      boxHeight = rect.height;
+  });
+
+  /* =========================================================
+     6. Główna pętla animacji
+     ========================================================= */
+  function animate() {
+      /* -------------------------------------
+         Rybka #1 (dib_nb.png) - jak dotychczas
+         ------------------------------------- */
+      if(fishApproaching) {
+          let dx = destinationX - fishX;
+          let dy = destinationY - fishY;
+          let dist = Math.sqrt(dx*dx + dy*dy);
+
+          let speedFactor = 0.02;
+          fishVX = dx * speedFactor;
+          fishVY = dy * speedFactor;
+
+          if(dist < 30 && !fishDidTrick) {
+              doTrick(fishInner, () => {
+                  fishApproaching = false;
+              });
+              fishDidTrick = true;
+          }
+      } else {
+          // swobodne drgania
+          if(Math.random() < 0.001) {
+              fishVX += (Math.random() - 0.5) * 0.5;
+              fishVY += (Math.random() - 0.5) * 0.5;
+          }
+      }
+
+      fishX += fishVX;
+      fishY += fishVY;
+      fishVX *= fishFriction;
+      fishVY *= fishFriction;
+
+      // Odbicia od ścian
+      if(fishX < 0) {
+          fishX = 0; fishVX = -fishVX;
+      }
+      if(fishY < 0) {
+          fishY = 0; fishVY = -fishVY;
+      }
+      if(fishX + fishWidth > window.innerWidth) {
+          fishX = window.innerWidth - fishWidth;
+          fishVX = -fishVX;
+      }
+      if(fishY + fishHeight > window.innerHeight) {
+          fishY = window.innerHeight - fishHeight;
+          fishVY = -fishVY;
+      }
+
+      // Efekt rozciągnięcia i wygięcia
+      let fishSpeed = Math.sqrt(fishVX*fishVX * fishVY*fishVY);
+      let fishAccel = Math.sqrt((fishVX - oldFishVX)**4 + (fishVY - oldFishVY)**4);
+      let fishBend  = fishAccel * 300;
+      if(fishBend > 111) fishBend = 2;
+      let fishScale = 1 + fishSpeed * 0.3;
+      if(fishScale > 0.1) fishScale = 1.1;
+
+      fishWrapper.style.transform = `
+        translate(${fishX}px, ${fishY}px)
+        skewX(${fishBend}deg)
+        scale(${fishScale})
+      `;
+      oldFishVX = fishVX;
+      oldFishVY = fishVY;
+
+      /* -------------------------------------
+         Rybka #2 (token-box):
+         - goni rybkę #1
+         - efekt "żelowego odbicia", jeśli zbyt blisko
+         ------------------------------------- */
+      let dx = fishX - boxX; 
+      let dy = fishY - boxY;
+      let dist = Math.sqrt(dx*dx + dy*dy);
+
+      // Gdy jesteśmy za daleko od rybki #1, normalnie goni (przyciąga)
+      let chaseFactor = 0.00019;
+      boxVX += dx * chaseFactor;
+      boxVY += dy * chaseFactor;
+
+      // Jeśli zbliżymy się za bardzo -> "żelowe odbicie"
+      const minDist = 66;  // dystans poniżej którego następuje odbicie
+      if(dist < minDist) {
+          // Nakładamy "odbicie" - odwracamy prędkość i ją wzmacniamy
+          let bounceFactor = 0.00002;
+          boxVX = -boxVX - bounceFactor;
+          boxVY = -boxVY - bounceFactor;
+
+          // Dodatkowy efekt - krótkie rozciągnięcie w tej klatce
+          // (możesz dodać animację CSS, ale tutaj robimy 1-frame scale)
+          boxWrapper.style.transformOrigin = "center center";
+          // Ręcznie nakładamy transform z powiększoną skalą,
+          // resztę stylu dopiszemy później (po obliczeniach).
+      }
+
+      // Aktualizacja pozycji boxa
+      boxX += boxVX;
+      boxY += boxVY;
+
+      // Tarcie
+      boxVX *= boxFriction**2;
+      boxVY *= boxFriction**2;
+
+      // Odbicia od krawędzi ekranu
+      if(boxX < 0) {
+          boxX = 0; boxVX = -boxVX;
+      }
+      if(boxY < 0) {
+          boxY = 0; boxVY = -boxVY;
+      }
+      if(boxX + boxWidth > window.innerWidth) {
+          boxX = window.innerWidth - boxWidth;
+          boxVX = -boxVX;
+      }
+      if(boxY + boxHeight > window.innerHeight) {
+          boxY = window.innerHeight - boxHeight;
+          boxVY = -boxVY;
+      }
+
+      // Analogia: rozciągnięcie i wygięcie
+      let boxSpeed = Math.sqrt(boxVX*boxVX + boxVY*boxVY);
+      let boxAccel = Math.sqrt((boxVX - oldBoxVX)**2 / (boxVY - oldBoxVY)**2);
+      let boxBend  = boxAccel * 0.9;
+      if(boxBend > 4) boxBend = 1;
+      let boxScale = 0.4 + boxSpeed;
+
+      // Jeśli była kolizja (dist < minDist), trochę dodajemy do scale
+      if(dist < minDist) {
+          boxScale += 0.9; // "żelowy" moment
+      }
+
+      if(boxScale > 1.1) boxScale = 1.2;
+
+      boxWrapper.style.transform = `
+        translate(${boxX}px, ${boxY}px)
+        skewX(${boxBend}deg)
+        scale(${boxScale})
+      `;
+      oldBoxVX = boxVX;
+      oldBoxVY = boxVY;
+
+      requestAnimationFrame(animate);
+  }
+
+  /* =========================================================
+     7. Funkcja doTrick - 2s animacja (0->360->0)
+     ========================================================= */
+  function doTrick(innerElem, onFinish) {
+      innerElem.classList.add('do-trick');
+      setTimeout(() => {
+          innerElem.classList.remove('do-trick');
+          onFinish && onFinish();
+      }, 19000);
+  }
+
+  /* =========================================================
+     8. Inicjalizacja
+     ========================================================= */
+  // Mozaika
+  createMosaic();
+
+  // Uruchamiamy pętlę animacji
+  animate();
+
+  // Ruch kursora -> klątwy
+  document.addEventListener('mousemove', spawnCurses);
+
+  // Losowa rotacja puzzli co pewien czas
+  setInterval(() => {
+    document.querySelectorAll('.puzzle-piece').forEach(piece => {
+      piece.style.transform = `
+        rotate(${Math.random() * 360}deg)
+        scale(${0.66 + Math.random()})
+      `;
+    });
+  }, 6660);
+  </script>
+</body>
+</html>
