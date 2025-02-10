@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dIb - Hell's Favorite Meme Coin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #ff0000;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Creepster', cursive;
+            cursor: crosshair;
+        }
+
+        #mosaic-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            filter: brightness(0.7);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .puzzle-piece {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            transition: 0.3s;
+            border: 1px solid #ff000022;
+            position: relative;
+        }
+
+        .puzzle-piece::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 5%;
+            width: 90%;
+            height: 20px;
+            background: radial-gradient(#ff000044, transparent 70%);
+            filter: blur(10px);
+        }
+
+        #central-image {
+            position: fixed;
+            width: 300px;
+            z-index: 2;
+            transition: transform 0.05s linear;
+            filter: saturate(0.8);
+            animation: flicker 2s infinite;
+            box-shadow: 0 0 0px #ff0000;
+            pointer-events: none;
+        }
+
+        .curse-element {
+            position: absolute;
+            pointer-events: none;
+            font-size: 1.5em;
+            animation: curse 6s forwards;
+            text-shadow: 0 0 10px #ff0000;
+            white-space: nowrap;
+            z-index: 3;
+        }
+
+        .floating-frame {
+            position: absolute;
+            background: #1a0000;
+            border: 3px solid #ff0000;
+            padding: 15px;
+            max-width: 200px;
+            font-family: 'Bangers';
+            animation: floatFrame 25s linear forwards;
+            box-shadow: 0 0 20px #ff0000;
+            z-index: 4;
+            opacity: 1;
+            top: 20vh;
+            transform: translateY(0) rotate(-5deg) scale(0.9);
+        }
+
+        #counter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 2em;
+            color: #ff0000;
+            z-index: 4;
+        }
+
+        .token-box {
+            position: fixed;
+            top: 75%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a0000;
+            border: 2px solid #ff0000;
+            padding: 10px 10px;
+            font-family: 'Bangers';
+            cursor: pointer;
+            z-index: 5;
+            border-radius: 666px;
+            transition: all 0.3s;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        .token-box:hover {
+            background: #2a0000;
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 0 30px #ff0000;
+        }
+
+        .copy-notification {
+            position: fixed;
+            top: 80%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00ff00;
+            font-family: 'Creepster';
+            opacity: 0;
+            animation: copyAlert 2s;
+            z-index: 6;
+            pointer-events: none;
+        }
+
+        @keyframes flicker {
+            0% { filter: brightness(1) contrast(1); }
+            50% { filter: brightness(1.2) contrast(1.5); }
+            100% { filter: brightness(1) contrast(1); }
+        }
+
+        @keyframes curse {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            50% { opacity: 1; transform: scale(1.2) translateY(-40px); }
+            80% { opacity: 1; transform: scale(1.1) translateY(-60px); }
+            100% { opacity: 0; transform: scale(0.5) translateY(-80px); }
+        }
+
+        @keyframes floatFrame {
+            0% { 
+                opacity: 0;
+                transform: translateY(0) rotate(-5deg) scale(0.9); 
+            }
+            20% { 
+                opacity: 1;
+                transform: translateY(-20px) rotate(-5deg) scale(1); 
+            }
+            90% { 
+                opacity: 1;
+                transform: translateY(-100vh) rotate(5deg); 
+            }
+            100% { 
+                opacity: 0;
+                transform: translateY(-100vh) rotate(5deg) scale(0.8); 
+            }
+        }
+
+        @keyframes copyAlert {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="token-box" onclick="copyToken()">CONTRACT: The sixth infernal raven will circle the tower, and the token will be released.</div>
+    <div id="mosaic-container"></div>
+    <img src="dib_nb.png" id="central-image" alt="Demonic Coin">
+    <div id="counter">Souls Damned: 0</div>
+
+    <script>
+        // Inicjalizacja mozaiki
+        function createMosaic() {
+            const container = document.getElementById('mosaic-container');
+            for(let i = 0; i < 100; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'puzzle-piece';
+                piece.style.backgroundImage = `url(dib.jpg)`;
+                piece.style.backgroundPosition = 
+                    `${(i % 10) * -10}% ${Math.floor(i/10) * -10}%`;
+                piece.style.transform = `
+                    rotate(${Math.random() * 360}deg)
+                    scale(${0.8 + Math.random() * 0.4})
+                `;
+                container.appendChild(piece);
+            }
+        }
+
+        // Parametry fizyki
+        let mouseX = window.innerWidth/2;
+        let mouseY = window.innerHeight/2;
+        let imgX = window.innerWidth/2 - 150;
+        let imgY = window.innerHeight/2 - 150;
+        let velocityX = 0;
+        let velocityY = 0;
+        const PHYSICS = {
+            repulsionStrength: 0.95,
+            damping: 0.99,
+            maxSpeed: 28,
+            edgeBuffer: 300,
+            rotationFactor: 9.65,
+            scaleFactor: 0.0999,
+            activationDistance: 350
+        };
+
+        // Śledzenie kursora
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            spawnCurses(e);
+        });
+
+        // Generowanie przekleństw
+        const curses = {
+            emojis: ['💲','👿','😈','💀','👹','🔥','🎩','⚰️','🔪','🪓','💣','☠️','🌑','🦴','🧨','🗡️','🔮','☣️','⛓️','💰','💸','🤑','🏦','💱','📉','💹','🪙','⛧€','💲🔥','🐍₿','👹💸','♠️♦️','⚖️🩸','🔥₿','🩸$','🪦💵','⛓️🤑','🧛♂️💳','☠️📉','💳🔥','🕳️💎','⚰️💰','🔱💲','📜👺','🌪️💶','🗝️💔','🛡️₿','🧪💸','⚰️📉'],
+            phrases: [
+                "Your wallet is already in hell",
+                "Even Satan HODLs this",
+                "Rugpull speedrun any% WR",
+                "Financial seppuku included!",
+                "404: Financial Literacy Not Found",
+                "Certified Shitcoin™",
+                "Proof of Damnation",
+                "Your loss is our liquidity",
+                "Ponzi 2.0 - Now with hellfire!",
+                "Moon cancelled - going to hell",
+                "Dev abandoned project (literally)",
+                "DYOR? More like DYWORSHIPTHEDEVIL",
+                "Tokenomics by Beelzebub",
+                "100% of losses go to hell's charity",
+                "This is how wallets die",
+                "Liquidity pool hotter than hell",
+                "Whitepaper written in blood",
+                "Staking rewards: eternal damnation",
+                "Vaporware with extra steps",
+                "Not a scam (we swear)"
+            ],
+            perks: [
+                "666% APR in soul tokens",
+                "Eternal impermanent loss",
+                "Dev wallet: 69% supply",
+                "Liquidity locked in hell's vault",
+                "Audited by Cerberus",
+                "1000x or eternal damnation",
+                "Satan-approved tokenomics",
+                "Hellmainnet live since 1666",
+                "Zero utility maximum chaos",
+                "Inflation rate: 666%",
+                "Backed by demonic energy",
+                "CEO: Lucifer Morningstar"
+            ]
+        };
+
+        let curseCount = 0;
+        const counter = document.getElementById('counter');
+
+        // Funkcja kopiowania tokenu
+        function copyToken() {
+            navigator.clipboard.writeText("soon my slaves... soon..");
+            const notification = document.createElement('div');
+            notification.className = 'copy-notification';
+            notification.textContent = "COPIED (YOUR SOUL IS NEXT)";
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 2000);
+        }
+
+        function spawnCurses(e) {
+            if(Math.random() > 0.88) return;
+            
+            const curseType = Math.random();
+            const curse = document.createElement('div');
+            curse.className = 'curse-element';
+            curse.style.left = `${e.pageX + 15}px`;
+            curse.style.top = `${e.pageY - 15}px`;
+
+            if(curseType < 0.4) {
+                curse.textContent = curses.emojis[Math.floor(Math.random() * curses.emojis.length)];
+                curse.style.fontSize = `${30 + Math.random() * 70}px`;
+                curse.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
+            } 
+            else if(curseType < 0.7) {
+                curse.textContent = curses.phrases[Math.floor(Math.random() * curses.phrases.length)];
+                curse.style.fontFamily = Math.random() > 0.5 ? 'Bangers' : 'Arial Black';
+            } 
+            else {
+                curse.innerHTML = `${curses.emojis[Math.floor(Math.random() * curses.emojis.length)]} ${curses.phrases[Math.floor(Math.random() * curses.phrases.length)]}`;
+            }
+            
+            curse.style.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            document.body.appendChild(curse);
+            setTimeout(() => curse.remove(), 6000);
+            
+            if(Math.random() > 0.69) {
+                const frame = document.createElement('div');
+                frame.className = 'floating-frame';
+                frame.style.left = `${Math.random() * window.innerWidth}px`;
+                frame.textContent = curses.perks[Math.floor(Math.random() * curses.perks.length)];
+                document.body.appendChild(frame);
+                
+                setTimeout(() => {
+                    frame.style.opacity = '10';
+                    setTimeout(() => frame.remove(), 10000);
+                }, 14000);
+            }
+            
+            curseCount++;
+            counter.textContent = `Souls Damned: ${curseCount}`;
+        }
+
+        // Fizyka odpychania
+        function updatePhysics() {
+            const rect = document.getElementById('central-image').getBoundingClientRect();
+            const centerX = imgX + rect.width/3;
+            const centerY = imgY + rect.height/3;
+            
+            const dx = centerX - mouseX;
+            const dy = centerY - mouseY;
+            const distance = Math.sqrt(dx*dx + dy*dy);
+            
+            if (distance < PHYSICS.activationDistance) {
+                const force = PHYSICS.repulsionStrength * (0.9 - distance/PHYSICS.activationDistance)**2;
+                const angle = Math.atan2(dy, dx);
+                
+                velocityX += Math.cos(angle) * force * 2;
+                velocityY += Math.sin(angle) * force * 2;
+            }
+
+            velocityX = Math.max(-PHYSICS.maxSpeed, Math.min(PHYSICS.maxSpeed, velocityX));
+            velocityY = Math.max(-PHYSICS.maxSpeed, Math.min(PHYSICS.maxSpeed, velocityY));
+
+            velocityX *= PHYSICS.damping;
+            velocityY *= PHYSICS.damping;
+            imgX += velocityX;
+            imgY += velocityY;
+
+            const maxX = window.innerWidth - rect.width - PHYSICS.edgeBuffer;
+            const maxY = window.innerHeight - rect.height - PHYSICS.edgeBuffer;
+            imgX = Math.max(PHYSICS.edgeBuffer, Math.min(maxX, imgX));
+            imgY = Math.max(PHYSICS.edgeBuffer, Math.min(maxY, imgY));
+
+            const rotation = velocityX * PHYSICS.rotationFactor;
+            const scale = 0.1 + (Math.abs(velocityX) + Math.abs(velocityY)) * PHYSICS.scaleFactor;
+            
+            document.getElementById('central-image').style.transform = `
+                translate(${imgX}px, ${imgY}px)
+                rotate(${rotation}deg)
+                scale(${scale})
+            `;
+
+            requestAnimationFrame(updatePhysics);
+        }
+
+        // Reset pozycji
+        document.addEventListener('mouseleave', () => {
+            const centerX = window.innerWidth/2 - 150;
+            const centerY = window.innerHeight/2 - 150;
+            
+            velocityX = (centerX - imgX) * 0.07;
+            velocityY = (centerY - imgY) * 0.07;
+            
+            const returnInterval = setInterval(() => {
+                velocityX *= 0.85;
+                velocityY *= 0.85;
+                
+                if(Math.abs(velocityX) < 0.5 && Math.abs(velocityY) < 0.5) {
+                    clearInterval(returnInterval);
+                }
+            }, 50);
+        });
+
+        // Inicjalizacja
+        createMosaic();
+        updatePhysics();
+        setInterval(() => {
+            document.querySelectorAll('.puzzle-piece').forEach(piece => {
+                piece.style.transform = `
+                    rotate(${Math.random() * 360}deg)
+                    scale(${0.66 + Math.random()})
+                `;
+            });
+        }, 6660);
+    </script>
+</body>
+</html>
